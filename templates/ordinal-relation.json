@@ -1,0 +1,27 @@
+{
+    "params": [
+        {
+            "type": "Rel",
+            "symbol": "<R>"
+        },
+        {
+            "type": "Ordinal",
+            "symbol": "<Or>"
+        },
+        {
+            "type": "Object",
+            "symbol": "<O>"
+        }
+    ],
+    "texts": [
+        "Give me the <Or> <O> from the <R>.",
+        "Hand me the <Or> <O> from the <R>.",
+        "Pass me the <Or> <O> from the <R>.",
+        "Fetch the <Or> <O> from the <R>.",
+        "Get the <Or> <O> from the <R>.",
+        "Bring the <Or> <O> from the <R>.",
+        "Bring me the <Or> <O> from the <R>.",
+        "I need the <Or> <O> from the <R>.",
+        "I want the <Or> <O> from the <R>."
+    ]
+}

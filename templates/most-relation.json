@@ -1,0 +1,32 @@
+{
+    "params": [
+        {
+            "type": "Rel",
+            "symbol": "<R>"
+        },
+        {
+            "type": "Object",
+            "symbol": "<O>"
+        }
+    ],
+    "texts": [
+        "Give me the most <R> <O>.",
+        "Hand me the most <R> <O>.",
+        "Pass me the most <R> <O>.",
+        "Fetch the most <R> <O>.",
+        "Get the most <R> <O>.",
+        "Bring the most <R> <O>.",
+        "Bring me the most <R> <O>.",
+        "I need the most <R> <O>.",
+        "I want the <R> most <O>.",
+        "Give me the <R> most <O>.",
+        "Hand me the <R> most <O>.",
+        "Pass me the <R> most <O>.",
+        "Fetch the <R> most <O>.",
+        "Get the <R> most <O>.",
+        "Bring the <R> most <O>.",
+        "Bring me the <R> most <O>.",
+        "I need the <R> most <O>.",
+        "I want the <R> most <O>."
+    ]
+}

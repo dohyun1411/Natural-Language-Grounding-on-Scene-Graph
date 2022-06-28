@@ -1,0 +1,24 @@
+{
+    "params": [
+      {
+        "type": "name",
+        "symbol": "<N>"
+      },
+      {
+        "type": "det",
+        "symbol": "<D>"
+      }
+    ],
+    "text_list": [
+      "Give me <D> <N>.",
+      "Hand me <D> <N>.",
+      "Pass me <D> <N>.",
+      "Fetch <D> <N>.",
+      "Get <D> <N>.",
+      "Bring <D> <N>.",
+      "Bring me <D> <N>.",
+      "I need <D> <N>.",
+      "I want <D> <N>."
+    ]
+  }
+  

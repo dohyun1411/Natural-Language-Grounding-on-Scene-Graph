@@ -1,0 +1,46 @@
+{
+    "params": [
+        {
+            "type": "Rel",
+            "symbol": "<R>"
+        },
+        {
+            "type": "Name",
+            "symbol": "<N>"
+        },
+        {
+            "type": "Size",
+            "symbol": "<Z>"
+        },
+        {
+            "type": "Color",
+            "symbol": "<C>"
+        },
+        {
+            "type": "Object",
+            "symbol": "<O1>"
+        },
+        {
+            "type": "Object",
+            "symbol": "<O2>"
+        },
+        {
+            "type": "Det",
+            "symbol": "<D1>"
+        },
+        {
+            "type": "Det",
+            "symbol": "<D2>"
+        }
+    ],
+    "texts": [
+        "Give me <D1> <O1> on the <R> of <D2> <N>.",
+        "Hand me <D1> <O1> on the <R> of <D2> <N>.",
+        "Pass me <D1> <O1> on the <R> of <D2> <N>.",
+        "Fetch <D1> <O1> on the <R> of <D2> <N>.",
+        "Get <D1> <O1> on the <R> of <D2> <N>.",
+        "Bring <D1> <O1> on the <R> of <D2> <N>.",
+        "Bring me <D1> <O1> on the <R> of <D2> <N>.",
+        "I need <D1> <O1> on the <R> of <D2> <N>."
+    ]
+}
