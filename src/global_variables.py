@@ -5,8 +5,10 @@ RUNS_PATH = 'runs' # path used for tensorboard
 CKPT_PATH = 'checkpoints' # path to store checkpoints
 TRAIN_STATS_PATH = "trainstats" # path to store train status
 
-# file
+# label file
+LABEL_FILE = 'colors.txt' # 'objects.txt'
 OBJECTS_FILE = 'objects.txt'
+COLORS_FILE = 'colors.txt'
 
 # template file
 NAME_TEMPLATE = 'name.json'

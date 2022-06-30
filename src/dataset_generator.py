@@ -1,5 +1,7 @@
 import json, random
+from pickle import OBJ
 from os.path import join
+from re import S
 from tqdm import tqdm
 
 import pandas as pd
@@ -25,7 +27,17 @@ def attr_to_name(size, color, shape, material):
 
 class SceneGraphGenerator:
     def __init__(self):
-        pass
+        with open(join(join(DATA_PATH, args.task), OBJECTS_FILE)) as f:
+            self.objects = f.read().splitlines()
+        with open(join(join(DATA_PATH, args.task), COLORS_FILE)) as f:
+            self.colors = f.read().splitlines()
+        
+        self.opposite_reltion = {
+            'left': 'right',
+            'right': 'left',
+            'front': 'behind',
+            'behind': 'front'
+        }
 
     def convert_CLEVR_to_GQA(self, filename=None) -> list: # list of output file names
         """ Convert CLEVR dataset to GQA-style """
@@ -98,6 +110,100 @@ class SceneGraphGenerator:
 
         logger.info(f"Save as {join(DATA_PATH, output_filename)}")
         return output_filename
+    
+    def generate(
+        self,
+        min_num_objects=3,
+        max_num_objects=3,
+        train_size=8000,
+        val_size=2000
+        ):
+
+        output_filenames = []
+        train_scene_graphs = {}
+        for image_index in range(train_size):
+            num_objects = random.randint(min_num_objects, max_num_objects)
+            one_scene_graph = self.generate_one_scene_graph(num_objects)
+            train_scene_graphs[str(image_index)] = one_scene_graph
+        
+        filename = join(join(DATA_PATH, args.task), 'my_train_scenes.json')
+        with open(filename, 'w') as f:
+            json.dump(train_scene_graphs, f)
+        output_filenames.append('my_train_scenes.json')
+        logger.info(f"Save as my_train_scenes.json")
+        
+        val_scene_graphs = {}
+        for image_index in range(val_size):
+            num_objects = random.randint(min_num_objects, max_num_objects)
+            one_scene_graph = self.generate_one_scene_graph(num_objects)
+            val_scene_graphs[str(image_index)] = one_scene_graph
+
+        filename = join(join(DATA_PATH, args.task), 'my_val_scenes.json')
+        with open(filename, 'w') as f:
+            json.dump(val_scene_graphs, f)
+        output_filenames.append('my_val_scenes.json')
+        logger.info(f"Save as my_val_scenes.json")
+
+        return output_filenames
+    
+    def generate_one_scene_graph(self, num_objects=3):
+        scene_graph = {}
+        random.shuffle(self.colors)
+        for obj_id in range(num_objects):
+            name = random.choice(self.objects)
+            color = self.colors[obj_id % len(self.colors)] # TODO: more attributes
+            x = random.random() * 2 - 1 # assume to be normalized \in (-1, 1)
+            y = random.random() * 2 - 1
+            z = random.random() * 2 - 1
+            relations = []
+
+            for past_obj_id in range(obj_id):
+                past_obj = scene_graph[str(past_obj_id)]
+                past_x = past_obj['x']
+                past_y = past_obj['y']
+
+                rel_x = 'left' if x < past_x else 'right'
+                rel_y = 'front' if y < past_y else 'behind'
+
+                relations.append(
+                    {
+                        'object': str(past_obj_id),
+                        'name': rel_x
+                    }
+                )
+                relations.append(
+                    {
+                        'object': str(past_obj_id),
+                        'name': rel_y
+                    }
+                )
+
+                # updates past object's relations
+                past_relations = scene_graph[str(past_obj_id)]['relations']
+                past_relations.append(
+                    {
+                        'object': str(obj_id),
+                        'name': self.opposite_reltion[rel_x]
+                    }
+                )
+                past_relations.append(
+                    {
+                        'object': str(obj_id),
+                        'name': self.opposite_reltion[rel_y]
+                    }
+                )
+
+            obj = {
+                'name': name,
+                'relations': relations,
+                'attributes': ['', color, '', ''], # size, color, shape, material
+                'x': x,
+                'y': y,
+                'z': z
+            }
+            scene_graph[str(obj_id)] = obj
+
+        return scene_graph
 
 
 class TextGenerator:
@@ -218,10 +324,10 @@ class TextGenerator:
         if filename is None:
             filename = self.scene_graph_filename.replace("scenes", "texts").replace(".json", '_')
             filename += self.args.gen_text + '.json'
-        with open(join(DATA_PATH, filename), 'w') as f:
+        with open(join(join(DATA_PATH, self.args.task), filename), 'w') as f:
             json.dump(text_dataset, f)
         
-        logger.info(f"Save as {join(DATA_PATH, filename)}")
+        logger.info(f"Save as {join(join(DATA_PATH, self.args.task), filename)}")
         return filename
 
 
@@ -239,41 +345,26 @@ class TextGenerator:
         return text, word
     
     def generate_attr_text(self, scene):
-        raise NotImplementedError
-        text = random.choice(self.attr_template['texts'])
-
         obj_ids = list(scene.keys())
         obj_id = random.choice(obj_ids)
         obj = scene[obj_id]
         name = obj['name']
         size, color, shape, material = obj['attributes']
-        symbol_to_word = {}
-        # TODO
-        if '<Z>' in text:
-            symbol_to_word['<Z>'] = size
-        if '<C>' in text:
-            symbol_to_word['<C>'] = color
-        # if '<S>' in text:
-        #     symbol_to_word['<S>'] = shape
-        # if '<M>' in text:
-        #     symbol_to_word['<M>'] = material
-
-        # cut = random.randint(1, 2)
-        cut = 2
-        shuffled_symbols = list(symbol_to_word.keys())
-        random.shuffle(shuffled_symbols)
-        for selected_symbol in shuffled_symbols[:cut]:
-            text = text.replace(selected_symbol, symbol_to_word[selected_symbol])
-        for removed_symbol in shuffled_symbols[cut:]:
-            text = text.replace(removed_symbol, '')
         
-        things = ['object', 'thing', 'one']
-        thing = random.choice(things)
-        text = text.replace('<O>', thing)
-        text = text.replace('<D>', self.get_det(thing))
+        text = random.choice(self.attr_template['text_list'])
+        text = text.replace('<N>', name)
+        text = text.replace('<D>', self.get_det(name))
+        text = text.replace('<C>', color)
         text = ' '.join(text.split())
 
-        return text, name
+        if self.args.label_type == 'name':
+            label_type = name
+        elif self.args.label_type == 'color':
+            label_type = color
+        else:
+            raise NotImplementedError()
+
+        return text, label_type
 
     def generate_single_rel_text(self, scene):
 
@@ -369,6 +460,7 @@ class TextGenerator:
 
         assert target_id != -1
         name = scene[target_id]['name']
+        size, color, shape, material = scene[target_id]['attributes']
         opposite_target_rel = self.opposite_reltion[target_rel]
 
         text = random.choice(self.most_rel_template['texts'])
@@ -378,7 +470,14 @@ class TextGenerator:
         text = text.replace('<O>', random.choice(things))
         text = ' '.join(text.split())
         
-        return text, name
+        if self.args.label_type == 'name':
+            label_type = name
+        elif self.args.label_type == 'color':
+            label_type = color
+        else:
+            raise NotImplementedError()
+
+        return text, label_type
     
     def generate_common_sense_text(self, scene):
         target_obj_id = random.choice(list(scene.keys()))
@@ -441,16 +540,22 @@ if __name__ == '__main__':
     args = get_args()
     seed_all()
 
+    logger.info(f"Generate dataset for {args.task}")
+
     scene_graph_filenames = []
     if args.gen_scene:
         logger.info("Generate scene graph dataset")
         scene_graph_generator = SceneGraphGenerator()
-        scene_graph_filenames = scene_graph_generator.convert_CLEVR_to_GQA()
+        if args.task == 'manip':
+            scene_graph_filenames = scene_graph_generator.convert_CLEVR_to_GQA()
+        elif args.task == 'nav':
+            scene_graph_filenames = scene_graph_generator.generate()
+
 
     if args.gen_text != '0000000':
         if not scene_graph_filenames:
             for split in ['train', 'val']:
-                if os.path.isfile(join(DATA_PATH, f"my_{split}_scenes.json")):
+                if os.path.isfile(join(join(DATA_PATH, args.task), f"my_{split}_scenes.json")):
                     scene_graph_filenames.append(f"my_{split}_scenes.json")
         if not scene_graph_filenames:
             raise Exception("No scene graph dataset")

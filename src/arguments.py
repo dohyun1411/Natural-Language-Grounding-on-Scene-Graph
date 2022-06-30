@@ -14,6 +14,17 @@ def get_args():
         help="random seed number. set -1 if you do not want to use"
     )
 
+    parser.add_argument(
+        '--task',
+        type=str, default='manip',
+        help='type of task. supported: manip, nav'
+    )
+    parser.add_argument(
+        '--label-type',
+        type=str, default='name',
+        help='type of label. supported: name, color'
+    )
+
     # Dataset Generator
     parser.add_argument(
         '--gen-scene',
@@ -50,6 +61,10 @@ def get_args():
     parser.add_argument(
         '--prefix-len',
         type=int, default=5
+    )
+    parser.add_argument(
+        '--prefix-hidden-size',
+        type=int, default=512
     )
     parser.add_argument(
         '--problem-type',

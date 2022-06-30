@@ -73,13 +73,15 @@ def get_config(args=None):
     config = AutoConfig.from_pretrained(args.plm)
     config.plm_name = args.plm
     config.debug = args.debug
+    config.task = args.task
+    config.label_type = args.label_type
 
     # Model
     config.tokenizer = get_tokenizer(args)
     config.num_graph_convs = args.num_graph_convs
     config.prefix_len = args.prefix_len
     config.prefix_projection = True
-    config.prefix_hidden_size = 512
+    config.prefix_hidden_size = args.prefix_hidden_size
     config.hidden_dropout_prob = 0.1
     # config.num_labels = len(Label)
     config.problem_type = args.problem_type
@@ -111,7 +113,8 @@ def open_json(filename):
     return file
 
 def open_dataset(dataset_filename):
-    return open_json(join(DATA_PATH, dataset_filename))
+    config = get_config()
+    return open_json(join(join(DATA_PATH, config.task), dataset_filename))
 
 def open_template(template_filename):
     return open_json(join(TEMPLATES_PATH, template_filename))

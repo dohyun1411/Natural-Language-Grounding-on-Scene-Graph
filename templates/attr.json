@@ -1,0 +1,28 @@
+{
+    "params": [
+      {
+        "type": "name",
+        "symbol": "<N>"
+      },
+      {
+        "type": "color",
+        "symbol": "<C>"
+      },
+      {
+        "type": "det",
+        "symbol": "<D>"
+      }
+    ],
+    "text_list": [
+      "Give me <D> <C> <N>.",
+      "Hand me <D> <C> <N>.",
+      "Pass me <D> <C> <N>.",
+      "Fetch <D> <C> <N>.",
+      "Get <D> <C> <N>.",
+      "Bring <D> <C> <N>.",
+      "Bring me <D> <C> <N>.",
+      "I need <D> <C> <N>.",
+      "I want <D> <C> <N>."
+    ]
+  }
+  

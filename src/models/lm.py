@@ -35,7 +35,7 @@ class BertPrefixForSequenceClassificationWithSkip(BertPreTrainedModel):
         trainable_params = sum(param.numel() for param in self.parameters() if param.requires_grad)
         assert all_params == plm_params + trainable_params, \
             f"{all_params} != {plm_params} + {trainable_params}"
-        logger.info(f"Language Model parameters: {trainable_params} / {all_params} = {trainable_params / all_params:.2f}")
+        logger.info(f"Language Model: {trainable_params} / {all_params} = {trainable_params / all_params:.2f}")
     
     def get_prompt(self, graph_prefix, batch_size):
 

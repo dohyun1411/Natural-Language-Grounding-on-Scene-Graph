@@ -44,7 +44,12 @@ def preprocess_graph_data(graph: dict):
         node_word = ' '.join(node_word.split())
         node_words.append(node_word)
 
-        obj_mask[Label.from_name(obj['name'])] = 1
+        if config.label_type == 'name':
+            label_type = obj['name']
+        elif config.label_type == 'color':
+            label_type = obj['attributes'][1]
+
+        obj_mask[Label.from_name(label_type)] = 1
     
         for rel in obj['relations']:
             idx_pair = (node_idx, obj_id_to_node_idx[rel['object']])
@@ -94,17 +99,17 @@ class LengthMetaclass(type):
         return self.clslength()
 
 class Label(object, metaclass=LengthMetaclass):
-    with open(join(DATA_PATH, OBJECTS_FILE)) as f:
-        objects = f.read().splitlines()
-    name_to_label = {name: i for i, name in enumerate(objects)}
+    with open(join(join(DATA_PATH, config.task), LABEL_FILE)) as f:
+        label_to_name = f.read().splitlines()
+    name_to_label = {name: i for i, name in enumerate(label_to_name)}
 
     @classmethod
     def clslength(cls):
-        return len(Label.objects)
+        return len(Label.label_to_name)
 
     @staticmethod
     def to_name(label):
-        return Label.objects[label]
+        return Label.label_to_name[label]
 
     @staticmethod
     def from_name(name):
@@ -116,11 +121,11 @@ class GraphTextDataset(Dataset):
         self.config = config
         self.split = split
 
-        f = open(join(DATA_PATH, f"my_{split}_scenes.json"))
+        f = open(join(join(DATA_PATH, config.task), f"my_{split}_scenes.json"))
         self.graphs_json = json.load(f)
         f.close()
 
-        g = open(join(DATA_PATH, f"my_{split}_texts_{config.name}.json"))
+        g = open(join(join(DATA_PATH, config.task), f"my_{split}_texts_{config.name}.json"))
         self.texts_json = json.load(g)
         g.close()
 
