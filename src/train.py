@@ -63,6 +63,8 @@ if __name__ == '__main__':
         os.makedirs(join(CKPT_PATH, config.name), exist_ok=True)
         ckpt_path = join(CKPT_PATH, config.name)
 
+        os.makedirs(join(TRAIN_STATS_PATH, config.name), exist_ok=True)
+
     total_t0 = time.time()
     save_t0 = time.time()
     training_stats = {}
@@ -108,7 +110,7 @@ if __name__ == '__main__':
     
             loss.backward()
             optimizer.step()
-            
+
             if config.debug:
                 break
         
