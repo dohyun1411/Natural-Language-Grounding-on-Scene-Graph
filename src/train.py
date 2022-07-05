@@ -196,7 +196,7 @@ if __name__ == '__main__':
             with open(join(TRAIN_STATS_PATH, f"{config.name}.json"), 'w') as f:
                 json.dump(training_stats, f)
 
-            if time.time() - save_t0 > 3600:
+            if True: # time.time() - save_t0 > 3600:
                 save_t0 = time.time()
 
                 model_name = join(ckpt_path, f"epoch_{epoch}.pt")
