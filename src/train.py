@@ -201,10 +201,10 @@ if __name__ == '__main__':
 
                 model_name = join(ckpt_path, f"epoch_{epoch}.pt")
                 torch.save({
-                    'epoch': epoch,
+                    # 'epoch': epoch,
                     'model_state_dict': model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    'scheduler_state_dict': scheduler.state_dict()
+                    # 'optimizer_state_dict': optimizer.state_dict(),
+                    # 'scheduler_state_dict': scheduler.state_dict()
                 }, model_name)
                 logger.info("")
                 logger.info(f"Save model as {model_name}")
