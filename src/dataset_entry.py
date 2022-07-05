@@ -121,11 +121,11 @@ class GraphTextDataset(Dataset):
         self.config = config
         self.split = split
 
-        f = open(join(join(DATA_PATH, config.task), f"my_{split}_scenes.json"))
+        f = open(join(join(DATA_PATH, config.task), f"korean_{split}_scenes.json"))
         self.graphs_json = json.load(f)
         f.close()
 
-        g = open(join(join(DATA_PATH, config.task), f"my_{split}_texts_{config.name}.json"))
+        g = open(join(join(DATA_PATH, config.task), f"korean_{split}_texts_0100000.json"))
         self.texts_json = json.load(g)
         g.close()
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     from tqdm import tqdm
 
     logger.debug("Open file")
-    with open(join(DATA_PATH, "my_val_scenes.json")) as f:
+    with open(join(DATA_PATH, "nav/korean_val_scenes.json")) as f:
         graph = json.load(f)
     logger.debug("Opening file done!")
 

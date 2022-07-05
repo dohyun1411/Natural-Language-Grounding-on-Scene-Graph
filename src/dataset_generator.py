@@ -33,10 +33,10 @@ class SceneGraphGenerator:
             self.colors = f.read().splitlines()
         
         self.opposite_reltion = {
-            'left': 'right',
-            'right': 'left',
-            'front': 'behind',
-            'behind': 'front'
+            '왼쪽': '오른쪽',
+            '오른쪽': '왼쪽',
+            '앞쪽': '뒤쪽',
+            '뒤쪽': '앞쪽'
         }
 
     def convert_CLEVR_to_GQA(self, filename=None) -> list: # list of output file names
@@ -115,8 +115,8 @@ class SceneGraphGenerator:
         self,
         min_num_objects=3,
         max_num_objects=3,
-        train_size=8000,
-        val_size=2000
+        train_size=800,
+        val_size=200
         ):
 
         output_filenames = []
@@ -126,11 +126,11 @@ class SceneGraphGenerator:
             one_scene_graph = self.generate_one_scene_graph(num_objects)
             train_scene_graphs[str(image_index)] = one_scene_graph
         
-        filename = join(join(DATA_PATH, args.task), 'my_train_scenes.json')
+        filename = join(join(DATA_PATH, args.task), 'korean_train_scenes.json')
         with open(filename, 'w') as f:
             json.dump(train_scene_graphs, f)
-        output_filenames.append('my_train_scenes.json')
-        logger.info(f"Save as my_train_scenes.json")
+        output_filenames.append('korean_train_scenes.json')
+        logger.info(f"Save as korean_train_scenes.json")
         
         val_scene_graphs = {}
         for image_index in range(val_size):
@@ -138,11 +138,11 @@ class SceneGraphGenerator:
             one_scene_graph = self.generate_one_scene_graph(num_objects)
             val_scene_graphs[str(image_index)] = one_scene_graph
 
-        filename = join(join(DATA_PATH, args.task), 'my_val_scenes.json')
+        filename = join(join(DATA_PATH, args.task), 'korean_val_scenes.json')
         with open(filename, 'w') as f:
             json.dump(val_scene_graphs, f)
-        output_filenames.append('my_val_scenes.json')
-        logger.info(f"Save as my_val_scenes.json")
+        output_filenames.append('korean_val_scenes.json')
+        logger.info(f"Save as korean_val_scenes.json")
 
         return output_filenames
     
@@ -150,8 +150,17 @@ class SceneGraphGenerator:
         scene_graph = {}
         random.shuffle(self.colors)
         for obj_id in range(num_objects):
-            name = random.choice(self.objects)
+            name = '콘' # random.choice(self.objects)
             color = self.colors[obj_id % len(self.colors)] # TODO: more attributes
+            # Convert to Korean
+            if color == 'orange':
+                color = '오렌지'
+            elif color == 'green':
+                color = "초록"
+            elif color == 'yellow':
+                color = '노란'
+            elif color == 'red':
+                color = '빨간'
             x = random.random() * 2 - 1 # assume to be normalized \in (-1, 1)
             y = random.random() * 2 - 1
             z = random.random() * 2 - 1
@@ -162,8 +171,9 @@ class SceneGraphGenerator:
                 past_x = past_obj['x']
                 past_y = past_obj['y']
 
-                rel_x = 'left' if x < past_x else 'right'
-                rel_y = 'front' if y < past_y else 'behind'
+                # Korean relation
+                rel_x = '왼쪽' if x < past_x else '오른쪽'
+                rel_y = '앞쪽' if y < past_y else '뒤쪽'
 
                 relations.append(
                     {
@@ -222,7 +232,7 @@ class TextGenerator:
         self.scenes = open_dataset(scene_graph_filename)
 
         self.name_template = open_template(NAME_TEMPLATE)
-        self.attr_template = open_template(ATTR_TEMPLATE)
+        self.attr_template = open_template("korean-color-cone.json")
         self.single_rel_template = open_template(SIGNLE_REL_TEMPLATE)
         self.most_rel_template = open_template(MOST_REL_TEMPLATE)
         self.ordinal_rel_template = open_template(ORDINAL_REL_TEMPLATE) 
@@ -255,7 +265,7 @@ class TextGenerator:
     def generate_text_dataset(
         self,
         num_name=0,
-        num_attr=0,
+        num_attr=1,
         num_single_rel=0,
         num_most_rel=0,
         num_common_sense=0,
@@ -350,11 +360,12 @@ class TextGenerator:
         obj = scene[obj_id]
         name = obj['name']
         size, color, shape, material = obj['attributes']
+        색 = '색' if random.random() < 0.5 else ''
         
         text = random.choice(self.attr_template['text_list'])
-        text = text.replace('<N>', name)
-        text = text.replace('<D>', self.get_det(name))
-        text = text.replace('<C>', color)
+        # text = text.replace('<N>', name)
+        # text = text.replace('<D>', self.get_det(name))
+        text = text.replace('<C>', color + 색)
         text = ' '.join(text.split())
 
         if self.args.label_type == 'name':
@@ -555,8 +566,8 @@ if __name__ == '__main__':
     if args.gen_text != '0000000':
         if not scene_graph_filenames:
             for split in ['train', 'val']:
-                if os.path.isfile(join(join(DATA_PATH, args.task), f"my_{split}_scenes.json")):
-                    scene_graph_filenames.append(f"my_{split}_scenes.json")
+                if os.path.isfile(join(join(DATA_PATH, args.task), f"korean_{split}_scenes.json")):
+                    scene_graph_filenames.append(f"korean_{split}_scenes.json")
         if not scene_graph_filenames:
             raise Exception("No scene graph dataset")
             

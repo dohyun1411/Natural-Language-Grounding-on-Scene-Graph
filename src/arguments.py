@@ -16,12 +16,12 @@ def get_args():
 
     parser.add_argument(
         '--task',
-        type=str, default='manip',
+        type=str, default='nav',
         help='type of task. supported: manip, nav'
     )
     parser.add_argument(
         '--label-type',
-        type=str, default='name',
+        type=str, default='color',
         help='type of label. supported: name, color'
     )
 
@@ -55,7 +55,7 @@ def get_args():
     # Language Model Classifier
     parser.add_argument(
         '--plm',
-        type=str, default="bert-base-uncased",
+        type=str, default="bert-base-multilingual-uncased",
         help='pre-trained languge model to be used'
     )
     parser.add_argument(

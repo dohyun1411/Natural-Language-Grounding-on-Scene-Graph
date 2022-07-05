@@ -21,7 +21,7 @@ ORDINAL_REL_TEMPLATE = 'ordinal-relation.json'
 COMMON_SENSE_CORPUS = 'common_sense_corpus.csv'
 
 # 
-GRAPH_WORD_MAX_LEN = 8
+GRAPH_WORD_MAX_LEN = 16
 MAX_NODE_WORD = 3 # TODO: Now we use only size and color
 # MAX_EDGE_WORD = 2 # TODO: More relations than 2
 
